@@ -17,8 +17,6 @@ export namespace AwsSecretManager {
 
 
     } catch (error) {
-      console.error('attachToProcessEnv:: Error', error);
-
       if (process.env.NODE_ENV === 'local') {
         console.warn('attachToProcessEnv:: Use local process.env');
 
@@ -27,6 +25,8 @@ export namespace AwsSecretManager {
           DB_PASSWORD: 'local'
         }
       } else {
+        console.error('attachToProcessEnv:: Error', error);
+
         throw error;
       }
     }
