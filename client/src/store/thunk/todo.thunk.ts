@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { API } from '../../api';
-import { ThunkCallback, ThunkWithCallback } from '../types/shared.type';
+import { ThunkWithCallback } from '../types/shared.type';
 import { ICreateTodoDTO, ITodo } from '../types/todo.type';
 
 export const fetchTodoListThunk = createAsyncThunk<
