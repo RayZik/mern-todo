@@ -141,6 +141,7 @@ jobs:
           cluster: ${{ env.ECS_CLUSTER_NAME }}
           service: ${{ env.ECS_SERVICE_NAME }}
           wait-for-service-stability: true
+        timeout-minutes: 5
 
   client_deploy:
     name: Deploy Client
