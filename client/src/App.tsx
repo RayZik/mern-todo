@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const api_base = "http://localhost:3001";
+const api_base = "http://mern-elb-1132660749.us-east-1.elb.amazonaws.com/api";
 
 function App() {
   const [todos, setTodos] = useState<any[]>([]);
@@ -18,9 +18,12 @@ function App() {
   };
 
   const completeTodo = async (id: string) => {
-    const data = await fetch(`${api_base}/todos/${id}/toggle`).then((res) =>
-      res.json()
-    );
+    const data = await fetch(`${api_base}/todos/${id}/toggle-completion`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
 
     setTodos((todos: any[]) =>
       todos.map((todo) => {
@@ -34,7 +37,7 @@ function App() {
   };
 
   const addTodo = async () => {
-    const data = await fetch(api_base + "/todo/new", {
+    const data = await fetch(api_base + "/todos", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +54,7 @@ function App() {
   };
 
   const deleteTodo = async (id: string) => {
-    const data = await fetch(api_base + "/todo/delete/" + id, {
+    const data = await fetch(api_base + "/todos/" + id, {
       method: "DELETE",
     }).then((res) => res.json());
 
@@ -77,7 +80,14 @@ function App() {
 
               <div className="text">{todo.text}</div>
 
-              <div className="delete-todo" onClick={() => deleteTodo(todo._id)}>
+              <div
+                className="delete-todo"
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  deleteTodo(todo._id);
+                }}
+              >
                 x
               </div>
             </div>
@@ -105,7 +115,7 @@ function App() {
               value={newTodo}
             />
             <div className="button" onClick={addTodo}>
-              Create Task
+              Create new Task
             </div>
           </div>
         </div>
