@@ -5,6 +5,6 @@ export const Yup = yup;
 export const YupSharedTypes = {
   id: Yup.string(),
   todo: {
-    text: Yup.string().min(1)
+    title: Yup.string().min(1)
   }
 };

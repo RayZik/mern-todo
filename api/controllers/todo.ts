@@ -16,12 +16,12 @@ export const getTodoListController = [
 export const createTodoController = [
   ValidatorMiddleware({
     body: Yup.object({
-      text: YupSharedTypes.todo.text.required()
+      title: YupSharedTypes.todo.title.required()
     })
   }),
   async (req: Request<{}, {}, ICreateTodoDTO>, res: Response) => {
     const todo = new TodoModel({
-      text: req.body.text
+      title: req.body.title
     });
 
     await todo.save();
@@ -36,7 +36,7 @@ export const updateTodoController = [
       id: YupSharedTypes.id.required()
     }),
     body: Yup.object({
-      text: YupSharedTypes.todo.text
+      title: YupSharedTypes.todo.title
     })
   }),
   async (req: Request, res: Response) => {
@@ -51,7 +51,7 @@ export const updateTodoController = [
     }
 
     const updatedTodo = await todo.update({
-      text: req.body.text
+      title: req.body.title
     }, {
       lean: true,
       new: true
@@ -97,7 +97,7 @@ export const toggleCompletionTodoController = [
       })
     }
 
-    todo.complete = !todo.complete;
+    todo.completed = !todo.completed;
 
     await todo.save();
 

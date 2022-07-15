@@ -1,67 +1,65 @@
-import { useEffect, useState } from "react";
-const api_base = "http://mern-elb-1132660749.us-east-1.elb.amazonaws.com/api";
+import { useCallback, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { selectTodos } from "./store/slices/todo/todo.select";
+import {
+  createTodoThunk,
+  deleteTodoThunk,
+  fetchTodoListThunk,
+  toggleTodoCompletionThunk,
+} from "./store/thunk/todo.thunk";
 
 function App() {
-  const [todos, setTodos] = useState<any[]>([]);
   const [popupActive, setPopupActive] = useState(false);
   const [newTodo, setNewTodo] = useState("");
 
+  const dispatch = useAppDispatch();
+  const todos = useAppSelector(selectTodos);
+
   useEffect(() => {
-    GetTodos();
+    dispatch(fetchTodoListThunk());
   }, []);
 
-  const GetTodos = () => {
-    fetch(api_base + "/todos")
-      .then((res) => res.json())
-      .then((data) => setTodos(data))
-      .catch((err) => console.error("Error: ", err));
-  };
+  const addTodo = useCallback((newTodo: string) => {
+    dispatch(
+      createTodoThunk({
+        title: newTodo,
+        callback: (err, data) => {
+          if (err) {
+            return console.error(err);
+          }
 
-  const completeTodo = async (id: string) => {
-    const data = await fetch(`${api_base}/todos/${id}/toggle-completion`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json());
-
-    setTodos((todos: any[]) =>
-      todos.map((todo) => {
-        if (todo._id === data._id) {
-          todo.complete = data.complete;
-        }
-
-        return todo;
+          setPopupActive(false);
+          setNewTodo("");
+        },
       })
     );
-  };
+  }, []);
 
-  const addTodo = async () => {
-    const data = await fetch(api_base + "/todos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text: newTodo,
-      }),
-    }).then((res) => res.json());
-
-    setTodos([...todos, data]);
-
-    setPopupActive(false);
-    setNewTodo("");
-  };
-
-  const deleteTodo = async (id: string) => {
-    const data = await fetch(api_base + "/todos/" + id, {
-      method: "DELETE",
-    }).then((res) => res.json());
-
-    setTodos((todos: any[]) =>
-      todos.filter((todo) => todo._id !== data.result._id)
+  const deleteTodo = useCallback((id: string) => {
+    dispatch(
+      deleteTodoThunk({
+        id,
+        callback: (err, data) => {
+          if (err) {
+            return console.error(err);
+          }
+        },
+      })
     );
-  };
+  }, []);
+
+  const toggleCompletion = useCallback((id: string) => {
+    dispatch(
+      toggleTodoCompletionThunk({
+        id,
+        callback: (err, data) => {
+          if (err) {
+            return console.error(err);
+          }
+        },
+      })
+    );
+  }, []);
 
   return (
     <div className="App">
@@ -72,13 +70,13 @@ function App() {
         {todos.length > 0 ? (
           todos.map((todo) => (
             <div
-              className={"todo" + (todo.complete ? " is-complete" : "")}
+              className={"todo" + (todo.completed ? " is-complete" : "")}
               key={todo._id}
-              onClick={() => completeTodo(todo._id)}
+              onClick={() => toggleCompletion(todo._id)}
             >
               <div className="checkbox"></div>
 
-              <div className="text">{todo.text}</div>
+              <div className="text">{todo.title}</div>
 
               <div
                 className="delete-todo"
@@ -114,8 +112,8 @@ function App() {
               onChange={(e) => setNewTodo(e.target.value)}
               value={newTodo}
             />
-            <div className="button" onClick={addTodo}>
-              Create new Task
+            <div className="button" onClick={addTodo.bind(null, newTodo)}>
+              Create Task
             </div>
           </div>
         </div>

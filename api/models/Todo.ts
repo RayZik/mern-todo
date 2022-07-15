@@ -5,15 +5,15 @@ import { ITodo } from '../types/todo';
 const Schema = mongoose.Schema;
 
 const TodoSchema = new Schema<ITodo>({
-	text: {
+	title: {
 		type: String,
 		required: true
 	},
-	complete: {
+	completed: {
 		type: Boolean,
 		default: false
 	},
-	timestamp: {
+	createdAt: {
 		type: String,
 		default: Date.now()
 	}

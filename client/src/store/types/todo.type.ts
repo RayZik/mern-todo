@@ -1,5 +1,6 @@
-// @TODO duplicate of client/store/types/todo.type.ts
+// @TODO duplicate of api/types/todo.ts
 export interface ITodo {
+  _id: string;
   title: string;
   completed: boolean;
   createdAt: string | Date;
