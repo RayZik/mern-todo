@@ -17,11 +17,17 @@ export namespace AwsSecretManager {
 
 
     } catch (error) {
-      console.warn('attachToProcessEnv:: Use default process.env');
-      
-      data = {
-        DB_USER: 'mernadmin',
-        DB_PASSWORD: 'oi3OUFM17N68'
+      console.error('attachToProcessEnv:: Error', error);
+
+      if (process.env.NODE_ENV === 'local') {
+        console.warn('attachToProcessEnv:: Use local process.env');
+
+        data = {
+          DB_USER: 'local',
+          DB_PASSWORD: 'local'
+        }
+      } else {
+        throw error;
       }
     }
 
